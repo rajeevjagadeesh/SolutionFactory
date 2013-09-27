@@ -1,0 +1,82 @@
+<!doctype html>
+<!--
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Name       : WildFlowers 
+Description: A two-column, fixed-width design with dark color scheme.
+Version    : 1.0
+Released   : 20120902
+
+Modified by www.123PROSite.com
+-->
+<html lang="en">
+<head>
+<title>@Page.mTitle</title>
+<meta name="keywords" content="@Page.mKeywords" />
+<meta name="description" content="@Page.mDescription" />
+<meta charset="utf-8">
+      <!-- disable iPhone inital scale -->
+<meta name="viewport" content="width=device-width; initial-scale=1.0">
+<link href='http://fonts.googleapis.com/css?family=Oswald:400,300' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Abel' rel='stylesheet' type='text/css'>
+<link href="~/rclayouts/wildflowers/style.css" rel="stylesheet" type="text/css" media="screen" />
+       <!-- media queries css -->
+<link href="~/rclayouts/wildflowers/media-queries.css" rel="stylesheet" type="text/css">
+
+<!-- html5.js for IE less than 9 -->
+<!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- css3-mediaqueries.js for IE less than 9 -->
+<!--[if lt IE 9]>
+	<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+@RenderSection("head")
+</head>
+<body>
+<div id="wrapper">
+	<div id="header-wrapper" class="container">
+		<div id="header" class="container">
+			<div id="logo">
+				@RenderSection("rcTop",false)
+			</div>
+			<div id="menu">
+				@rcHelpers.SimpleMenu()
+			</div>
+		</div>
+		<div><img src="~/rclayouts/wildflowers/images/img03.png" class="shadow" alt=""/></div>
+	</div>
+	<!-- end #header -->
+	<div id="banner">
+		<div class="content"><img src="~/rclayouts/wildflowers/images/img04.jpg" class="big-img-front" alt="" /></div>
+		<div><img src="~/rclayouts/wildflowers/images/img03.png" class="shadow" alt="" /></div>
+	</div>
+	<div id="page">
+		<div id="content">
+                @RenderSection("rcLeft",false)
+				@RenderBody()
+                @RenderSection("rcBottom",false)
+			<div style="clear: both;">&nbsp;</div>
+		</div>
+		<!-- end #content -->
+		<div id="sidebar">
+			<ul>
+             @RenderSection("rcRight",false)
+			</ul>
+		</div>
+		<!-- end #sidebar -->
+		<div style="clear: both;">&nbsp;</div>
+	</div>
+	<div class="container"><img src="~/rclayouts/wildflowers/images/img03.png" class="shadow" alt="" /></div>
+	<!-- end #page --> 
+</div>
+<div id="footer-content"></div>
+<div id="footer">
+	<p>Copyright (c)  @DateTime.Now.Year @Request.Url.Host.ToLower(). All rights reserved. Design by <a href="http://www.freecsstemplates.org/">FCT</a>. Powered by <a href="http://www.razorc.net" title="free CMS made with ASP.net web pages">razorC</a></p>
+</div>
+<!-- end #footer -->
+</body>
+</html>

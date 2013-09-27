@@ -1,0 +1,50 @@
+﻿@{
+    
+      var db = Database.Open("razorC");
+    
+    //check if we need to install db tables
+    var runCheck = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'nmg_SimpleContact'";
+    var dataCheck = db.Query(runCheck);
+
+    if (dataCheck.Count() == 0){
+        //create tables
+
+        var ct = "CREATE TABLE [nmg_SimpleContact] (  [Id] int NOT NULL  IDENTITY (1,1), [smtpServer] nvarchar(100) NULL, [smtpPort] int NULL, [smtpSSL] bit NULL DEFAULT 0, [smtpuser] nvarchar(100) NULL, [smtpPwd] nvarchar(100) NULL, [smtpFrom] nvarchar(100) NULL, [smtpTo] nvarchar(100) NULL, [errName] nvarchar(500) NULL, [errEmail] nvarchar(500) NULL, [errEmail2] nvarchar(500) NULL, [errPhone] nvarchar(500) NULL, [errRequest] nvarchar(500) NULL, [thankYou] nvarchar(500) NULL, [mailSubject] nvarchar(100) NULL)";
+        var at = "ALTER TABLE [nmg_SimpleContact] ADD CONSTRAINT [PK_nmg_SimpleContact] PRIMARY KEY ([Id])";
+
+        db.Execute(ct);
+        db.Execute(at);
+
+        ct = "CREATE UNIQUE INDEX [UQ__nmg_SimpleContact__0000000000000027] ON [nmg_SimpleContact] ([Id] ASC)";
+        at = "Insert into nmg_SimpleContact (smtpServer, smtpPort, smtpSSL, smtpUser, smtpPwd, smtpFrom, smtpTo, errName, errEmail, errEmail2, errPhone, errRequest, thankYou, mailSubject ) "
+            + "values (@0, @1, @2, @3, @4, @5, @6, @7, @8, @9, @10, @11, @12, @13)";
+        db.Execute(ct);
+        db.Execute(at,"mail.yourdomain.com", 25, false, "you@yourdomain.com", "secret", "you@yourdomain.com", "you@yourdomain.com", "Enter Name", "Enter E-mail", "Enter valid E-mail", "Enter Phone", "Enter Question", "Thank You, e-mail sent. Someone will contact you within 24h", "E-mail from website");
+        
+        //insert widget
+        var wName = "SimpleContactForm";
+        var wFile = "_addon_nmgSimpleContact_show.cshtml";
+        var wTitle = "nmgSimpleContact - DO NOT CHANGE";
+        var wText = "To change this widget please go to rcAddons";
+        var wEditDate = DateTime.Now;
+
+        var sqlINWidget = "Insert into rc_Widgets "
+                        + "(wName, wTitle, wText, wEditDate, wFile) values "
+                        + "(@0, @1, @2, @3, @4)";
+
+        db.Execute(sqlINWidget, wName, wTitle, wText, wEditDate, wFile);
+        
+        
+        
+        Response.Redirect("~/rcAdmin/nmgSimpleContact/default");
+        
+        
+         }    
+        else{
+            ModelState.AddError("TblExists", "There is no need to run the installation more than once");
+        }
+        
+        
+
+}
+<div>@Html.ValidationSummary()</div>

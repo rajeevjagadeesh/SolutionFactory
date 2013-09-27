@@ -1,0 +1,187 @@
+﻿@{
+    Page.Title = "NMG Simple Contact Form";
+    
+    var db = Database.Open("razorC");
+    
+    //check if we need to install db tables
+    var runCheck = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'nmg_SimpleContact'";
+    var dataCheck = db.Query(runCheck);
+
+    if (dataCheck.Count() == 0)
+    {
+        Response.Redirect("~/rcAdmin/nmgSimpleContact/Install");
+    }
+    
+
+    var smtpServer = Request["smtpServer"];
+    var smtpPort = Request["smtpPort"];
+    bool smtpSSL = Request["smtpSSL"].AsBool();
+    var smtpUser = Request["smtpUser"];
+    var smtpPwd = Request["smtpPwd"];
+    var smtpFrom = Request["smtpFrom"];
+    var smtpTo = Request["smtpTo"];
+
+    var errName = Request["errName"];
+    var errEmail = Request["errEmail"];
+    var errEmail2 = Request["errEmail2"];
+    var errPhone = Request["errPhone"];
+    var errRequest = Request["errRequest"];
+    var thankYou = Request["thankYou"];
+    var mailSubject = Request["mailSubject"];
+
+    var errMSG = "";
+
+   
+        if (IsPost)
+        {
+            
+            foreach (var item in Request.Form)
+            {
+                
+            if(Request[item.ToString()].IsEmpty())
+                {
+                    ModelState.AddFormError("Required field " + item.ToString());
+                }
+
+            }
+            
+            //update db if valid
+            if (ModelState.IsValid)
+            {
+                var updateQ = "Update nmg_SimpleContact set smtpServer=@0, smtpPort=@1, smtpSSL=@2, smtpUser=@3, smtpPwd=@4, smtpFrom=@5, "
+                    + "smtpTo=@6, errName=@7,errEmail=@8,errEmail2=@9,errPhone=@10,errRequest=@11,thankYou=@12,mailSubject=@13";
+
+                try
+                {
+                    db.Execute(updateQ, smtpServer, smtpPort, smtpSSL, smtpUser, smtpPwd, smtpFrom, smtpTo, errName, errEmail, errEmail2, errPhone, errRequest, thankYou, mailSubject);
+                    errMSG="Data saved !";
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddFormError(ex.Message.ToString());
+                   
+                }      
+                        
+            }
+            
+            
+        }else
+        {
+            //load from db
+            var selectQ = "Select top 1 * from nmg_SimpleContact";
+            var d = db.QuerySingle(selectQ);
+
+            smtpServer = d.smtpServer;
+            smtpPort = d.smtpPort.ToString();
+            smtpSSL = d.smtpSSL;
+            smtpUser = d.smtpUser;
+            smtpPwd = d.smtpPwd;
+            smtpFrom = d.smtpFrom;
+            smtpTo = d.smtpTo;
+
+            errName = d.errName;
+            errEmail = d.errEmail;
+            errEmail2 = d.errEmail2;
+            errPhone = d.errPhone;
+            errRequest = d.errRequest;
+            thankYou = d.thankYou;
+            mailSubject = d.mailSubject;
+                                             
+        
+        }
+
+
+    }
+
+@section head {
+    
+}
+@section menu{
+@RenderPage("_Menu.cshtml")
+}
+
+@Html.ValidationSummary()
+<form method="post" action="">
+ <fieldset>
+        <legend>Setup</legend>
+        @errMSG
+        <ol>
+            <li >
+                <label for="smtpServer">Smtp Server:</label>
+                <input type="text" name="smtpServer" id="smtpServer" value="@smtpServer" maxlength="100" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter smtp server ex. mail.yourdomain.com or smtp.gmail.com" />
+                </li>
+
+                 <li >
+                <label for="smtpPort">Smtp Port:</label>
+                <input type="text" name="smtpPort" id="smtpPort" value="@smtpPort" maxlength="5" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter smtp port # ex. 25 or 465 for gmail - please check with your host" />
+                </li>
+
+                <li >
+                <label for="smtpSSL">Enable SSL:</label>
+                    <select name="smtpSSL" id="smtpSSL">
+                        <option value="true" @if(smtpSSL==true){<text>selected="selected"</text>}>Yes</option>
+                        <option value="false" @if(smtpSSL==false){<text>selected="selected"</text>}>No</option>
+                    </select> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Select Yes for Gmail" />
+                </li>
+
+                <li >
+                <label for="smtpUser">Smtp User:</label>
+                <input type="text" name="smtpUser" id="smtpUser" value="@smtpUser" maxlength="100" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter user ex. you@yourdomain.com" />
+                </li>
+
+                <li >
+                <label for="smtpPwd">Smtp Password:</label>
+                <input type="text" name="smtpPwd" id="smtpPwd" value="@smtpPwd" maxlength="100" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter password" />
+                </li>
+
+                <li >
+                <label for="smtpFrom">E-mail From:</label>
+                <input type="text" name="smtpFrom" id="smtpPwd" value="@smtpFrom" maxlength="100" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter e-mail address" />
+                </li>
+
+                <li >
+                <label for="smtpTo">E-mail To:</label>
+                <input type="text" name="smtpTo" id="smtpTo" value="@smtpTo" maxlength="100" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter e-mail address" />
+                </li>
+               
+               <li >
+                <label for="mailSubject">Email Subject:</label>
+                <input type="text" name="mailSubject" id="mailSubject" value="@mailSubject" maxlength="100" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Entere-mail subject here" />
+                </li>
+
+               <li >
+                <label for="errName">Name required msg.:</label>
+                <input type="text" name="errName" id="errName" value="@errName" maxlength="500" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter error message" />
+                </li>
+
+                <li >
+                <label for="errEmail">E-mail required msg:</label>
+                <input type="text" name="errEmail" id="errEmail" value="@errEmail" maxlength="500" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter error message" />
+                </li>
+
+                <li >
+                <label for="errEmail2">E-mail not valid msg.:</label>
+                <input type="text" name="errEmail2" id="errEmail2" value="@errEmail2" maxlength="500" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter error message" />
+                </li>
+
+                <li >
+                <label for="errPhone">Phone required msg.:</label>
+                <input type="text" name="errPhone" id="errPhone" value="@errPhone" maxlength="500" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter error message" />
+                </li>
+
+                <li >
+                <label for="errRequest">Question required msg.:</label>
+                <input type="text" name="errRequest" id="errRequest" value="@errRequest" maxlength="500" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter error message" />
+                </li>
+
+                <li >
+                <label for="thankYou">E-mail sent msg.:</label>
+                <input type="text" name="thankYou" id="thankYou" value="@thankYou" maxlength="500" /> <img src="@Href("~/rcadmin/images/help.gif")" alt="help" title="Enter thank you message" />
+                </li>
+
+        </ol>
+          <p class="form-actions">
+            <input type="submit" value="Update" title="Update" />
+        </p>
+</fieldset>
+</form>
